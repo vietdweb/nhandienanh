@@ -52,12 +52,6 @@ const btnTogglePose = document.getElementById('btn-toggle-pose');
 const btnToggleVoice = document.getElementById('btn-toggle-voice');
 const btnSnapshot = document.getElementById('btn-snapshot');
 
-// Game Elements
-const btnStartGame = document.getElementById('btn-start-game');
-const challengeTargetText = document.getElementById('challenge-target-text');
-const gameScoreEl = document.getElementById('game-score');
-const gameTimerEl = document.getElementById('game-timer');
-
 // App Instances
 const vision = new VisionManager();
 const renderer = new CanvasRenderer(canvas);
@@ -71,14 +65,6 @@ let lastDisplayedNumber = null;
 let frameCount = 0;
 let lastFpsUpdate = performance.now();
 let currentFps = 0;
-
-// Game State
-let isGameActive = false;
-let gameTargetNumber = 0;
-let gameScore = 0;
-let gameTimer = 0;
-let gameInterval = null;
-let matchHoldCount = 0;
 
 // Khởi chạy hệ thống AI
 async function initApp() {
@@ -235,9 +221,6 @@ function renderLoop(timestamp) {
 
       // Đọc số tiếng Việt & âm thanh
       sound.handleNumberDetection(count, primaryHand.gesture);
-
-      // Kiểm tra trong Mini Game
-      checkGameProgress(count);
     } else {
       // Không phát hiện tay
       displayNumber.textContent = '-';
@@ -267,76 +250,6 @@ function highlightNumberCard(activeNum) {
     if (numCards[i]) {
       numCards[i].classList.toggle('active', i === activeNum);
     }
-  }
-}
-
-// ==================== MINI-GAME THỬ THÁCH RA DẤU ====================
-function startChallengeGame() {
-  if (isGameActive) {
-    stopChallengeGame();
-    return;
-  }
-
-  isGameActive = true;
-  gameScore = 0;
-  gameScoreEl.textContent = '0';
-  btnStartGame.textContent = 'Dừng chơi';
-  btnStartGame.classList.add('primary');
-
-  sound.playTone(587.33, 'sine', 0.2); // D5 chime
-  nextChallengeRound();
-}
-
-function stopChallengeGame() {
-  isGameActive = false;
-  clearInterval(gameInterval);
-  challengeTargetText.textContent = `Trò chơi kết thúc! Tổng điểm của bạn: ${gameScore}`;
-  gameTimerEl.textContent = '--s';
-  btnStartGame.textContent = 'Chơi lại';
-  btnStartGame.classList.remove('primary');
-}
-
-function nextChallengeRound() {
-  if (!isGameActive) return;
-
-  // Chọn ngẫu nhiên số từ 1 đến 5
-  gameTargetNumber = Math.floor(Math.random() * 5) + 1;
-  challengeTargetText.innerHTML = `Hãy giơ nhanh <span>${gameTargetNumber} ngón tay</span>!`;
-
-  gameTimer = 6;
-  gameTimerEl.textContent = `${gameTimer}s`;
-  matchHoldCount = 0;
-
-  clearInterval(gameInterval);
-  gameInterval = setInterval(() => {
-    gameTimer--;
-    gameTimerEl.textContent = `${gameTimer}s`;
-    if (gameTimer <= 0) {
-      sound.playTone(180, 'sawtooth', 0.3); // Tiếng hết giờ
-      nextChallengeRound();
-    }
-  }, 1000);
-}
-
-function checkGameProgress(detectedCount) {
-  if (!isGameActive) return;
-
-  if (detectedCount === gameTargetNumber) {
-    matchHoldCount++;
-    // Nếu giữ đúng số ngón trong ~0.3s (10 frames)
-    if (matchHoldCount >= 8) {
-      gameScore += 10;
-      gameScoreEl.textContent = gameScore;
-      sound.playTone(880, 'triangle', 0.25); // Tiếng ăn điểm vui vẻ
-      matchHoldCount = 0;
-      clearInterval(gameInterval);
-      challengeTargetText.innerHTML = `🎉 Tuyệt vời! Chính xác <span>${gameTargetNumber} ngón</span>! (+10đ)`;
-      setTimeout(() => {
-        nextChallengeRound();
-      }, 900);
-    }
-  } else {
-    matchHoldCount = 0;
   }
 }
 
@@ -384,11 +297,6 @@ btnToggleVoice.addEventListener('click', () => {
   sound.voiceEnabled = !sound.voiceEnabled;
   btnToggleVoice.classList.toggle('active', sound.voiceEnabled);
   btnToggleVoice.textContent = `🔊 Giọng đọc: ${sound.voiceEnabled ? 'Bật' : 'Tắt'}`;
-});
-
-// Nút Bắt đầu chơi Game phản xạ
-btnStartGame.addEventListener('click', () => {
-  startChallengeGame();
 });
 
 // Chụp ảnh khoảnh khắc (Snapshot)
@@ -563,7 +471,6 @@ function runDemoStep() {
   updateFingerDots(handData.fingers);
   highlightNumberCard(demoStep);
   sound.handleNumberDetection(demoStep, handData.gesture);
-  checkGameProgress(demoStep);
 
   // Cập nhật người & Telemetry
   personTag.classList.add('detected');
