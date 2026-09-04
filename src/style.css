@@ -1,0 +1,602 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #070913;
+  --bg-card: rgba(13, 19, 36, 0.75);
+  --bg-card-hover: rgba(18, 27, 50, 0.85);
+  --border-cyan: rgba(0, 255, 204, 0.35);
+  --border-glow: rgba(0, 255, 204, 0.6);
+  --neon-cyan: #00ffcc;
+  --neon-blue: #00b4d8;
+  --neon-purple: #9d4edd;
+  --neon-magenta: #ff007f;
+  --neon-green: #00ff88;
+  --neon-amber: #ffb703;
+  --text-main: #f0f4f8;
+  --text-muted: #8b9bb4;
+  --font-cyber: 'Orbitron', monospace, sans-serif;
+  --font-tech: 'Rajdhani', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(0, 255, 204, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(157, 78, 221, 0.1) 0%, transparent 45%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: rgba(7, 9, 19, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-cyan);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 16px rgba(0, 255, 204, 0.4);
+}
+
+.brand-title {
+  font-family: var(--font-cyber);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  background: linear-gradient(90deg, #ffffff, var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-subtitle {
+  font-family: var(--font-tech);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.header-badges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(0, 255, 204, 0.08);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  font-family: var(--font-cyber);
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Layout chính */
+.main-container {
+  max-width: 1560px;
+  margin: 20px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  gap: 22px;
+}
+
+@media (max-width: 1080px) {
+  .main-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cột Camera Trực Tiếp */
+.viewport-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cyan);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 204, 0.03);
+  position: relative;
+}
+
+/* Banner Trạng thái Nhận diện Người */
+.person-status-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  background: rgba(10, 20, 36, 0.85);
+  border: 1px solid rgba(0, 180, 255, 0.3);
+  border-radius: 10px;
+  font-family: var(--font-tech);
+  font-size: 1.05rem;
+}
+
+.person-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.person-tag.detected {
+  color: var(--neon-cyan);
+}
+
+.person-confidence {
+  font-family: var(--font-cyber);
+  font-size: 0.85rem;
+  color: var(--neon-green);
+}
+
+/* Khung Camera & Canvas */
+.camera-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 640px;
+  background: #02040a;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 255, 204, 0.4);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+}
+
+#webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(-1); /* Mặc định lật gương */
+  transition: transform 0.2s ease;
+}
+
+#webcam-video.normal-view {
+  transform: scaleX(1);
+}
+
+#canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Overlay hiển thị Số cực đại trên màn hình */
+.huge-number-display {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(14px);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 0 25px rgba(0, 255, 204, 0.35);
+  min-width: 130px;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.huge-number-display.pulse {
+  transform: scale(1.08);
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 35px rgba(255, 0, 127, 0.6);
+}
+
+.huge-number-val {
+  font-family: var(--font-cyber);
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffffff, var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 204, 0.7));
+}
+
+.huge-number-label {
+  font-family: var(--font-tech);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Bảng hiển thị 5 trạng thái ngón tay trực quan */
+.fingers-state-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.finger-dot-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.finger-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s;
+}
+
+.finger-indicator-dot.active {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
+  transform: scale(1.2);
+}
+
+.finger-dot-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: var(--font-cyber);
+}
+
+/* Màn hình tải và cảnh báo camera */
+.viewport-overlay-message {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 18, 0.92);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  z-index: 30;
+  padding: 24px;
+  text-align: center;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(0, 255, 204, 0.15);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.message-title {
+  font-family: var(--font-cyber);
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+}
+
+.message-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+/* Thanh công cụ Camera Toolbar */
+.camera-controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding-top: 8px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hud-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-cyan);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-tech);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.hud-btn:hover {
+  background: rgba(0, 255, 204, 0.15);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+  transform: translateY(-1px);
+}
+
+.hud-btn.active {
+  background: rgba(0, 255, 204, 0.25);
+  border-color: var(--neon-cyan);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(0, 255, 204, 0.5);
+}
+
+.hud-btn.primary {
+  background: linear-gradient(135deg, #00b4d8, #00ffcc);
+  color: #040914;
+  font-weight: 700;
+  border: none;
+}
+
+.hud-btn.primary:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+}
+
+/* Cột bên phải (Side Panel) */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hud-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cyan);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.panel-title {
+  font-family: var(--font-cyber);
+  font-size: 0.95rem;
+  color: var(--neon-cyan);
+  letter-spacing: 1.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+}
+
+/* Bộ thước đếm ngón tay 1 - 5 (Finger Cards) */
+.finger-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.num-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  background: rgba(10, 15, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.num-card-val {
+  font-family: var(--font-cyber);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.num-card-name {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.num-card.active {
+  background: rgba(0, 255, 204, 0.2);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px rgba(0, 255, 204, 0.4);
+  transform: translateY(-3px);
+}
+
+.num-card.active .num-card-val {
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.num-card.active .num-card-name {
+  color: var(--neon-cyan);
+}
+
+/* Thống kê Telemetry Real-time */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-box {
+  background: rgba(10, 15, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-tech);
+}
+
+.stat-value {
+  font-family: var(--font-cyber);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin-top: 4px;
+}
+
+/* Thử thách tương tác (Game Mode) */
+.challenge-box {
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.15), rgba(0, 255, 204, 0.15));
+  border: 1px solid rgba(157, 78, 221, 0.4);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.challenge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.challenge-badge {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  background: var(--neon-purple);
+  color: #fff;
+  border-radius: 4px;
+  font-family: var(--font-cyber);
+}
+
+.challenge-target {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.challenge-target span {
+  color: var(--neon-cyan);
+  font-family: var(--font-cyber);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.challenge-score {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.challenge-score b {
+  color: var(--neon-green);
+  font-family: var(--font-cyber);
+}
+
+/* Hướng dẫn cử chỉ */
+.gesture-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.guide-icon {
+  font-size: 1.2rem;
+  width: 26px;
+  text-align: center;
+}
+
+.guide-text b {
+  color: var(--neon-cyan);
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 40px;
+}
+
+.app-footer a {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}

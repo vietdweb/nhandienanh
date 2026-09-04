@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Vision AI - Nhận diện Người & Đếm Ngón Tay (1 - 5)</title>
+  <meta name="description"
+    content="Hệ thống Camera AI nhận diện con người và cử chỉ ngón tay thời gian thực với MediaPipe và Vite." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-icon">👁️</div>
+      <div>
+        <h1 class="brand-title">NEXUS VISION AI</h1>
+        <p class="brand-subtitle">HỆ THỐNG NHẬN DIỆN CON NGƯỜI & CỬ CHỈ NGÓN TAY</p>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Cột Camera và Canvas HUD chính -->
+    <section class="viewport-card">
+      <!-- Banner Nhận diện Người -->
+      <div class="person-status-banner">
+        <div class="person-tag" id="person-tag">
+          <span id="person-icon">👤</span>
+          <span id="person-status-text">Đang quét tìm kiếm người...</span>
+        </div>
+        <div class="person-confidence" id="person-confidence">--%</div>
+      </div>
+
+      <!-- Khung Chiếu Camera -->
+      <div class="camera-viewport" id="camera-viewport">
+        <video id="webcam-video" autoplay playsinline muted></video>
+        <canvas id="canvas-overlay"></canvas>
+
+        <!-- Thẻ hiển thị số ngón tay siêu lớn nổi bật trên màn hình -->
+        <div class="huge-number-display" id="huge-display">
+          <div class="huge-number-val" id="display-number">-</div>
+          <div class="huge-number-label" id="display-label">Chờ ngón tay...</div>
+
+          <!-- Trạng thái 5 ngón tay -->
+          <div class="fingers-state-bar">
+            <div class="finger-dot-state">
+              <div class="finger-indicator-dot" id="dot-thumb"></div>
+              <span class="finger-dot-label">CÁI</span>
+            </div>
+            <div class="finger-dot-state">
+              <div class="finger-indicator-dot" id="dot-index"></div>
+              <span class="finger-dot-label">TRỎ</span>
+            </div>
+            <div class="finger-dot-state">
+              <div class="finger-indicator-dot" id="dot-middle"></div>
+              <span class="finger-dot-label">GIỮA</span>
+            </div>
+            <div class="finger-dot-state">
+              <div class="finger-indicator-dot" id="dot-ring"></div>
+              <span class="finger-dot-label">ÁP</span>
+            </div>
+            <div class="finger-dot-state">
+              <div class="finger-indicator-dot" id="dot-pinky"></div>
+              <span class="finger-dot-label">ÚT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Màn hình tải và thông báo trạng thái -->
+        <div class="viewport-overlay-message" id="overlay-message">
+          <div class="spinner" id="overlay-spinner"></div>
+          <h2 class="message-title" id="overlay-title">Đang khởi tạo Hệ thống AI...</h2>
+          <p class="message-desc" id="overlay-desc">Vui lòng chờ trong giây lát trong khi mô hình MediaPipe Tasks Vision
+            tải vào bộ nhớ WebAssembly.</p>
+          <button class="hud-btn primary" id="btn-start-camera" style="display: none;">
+            📷 Bật Camera Ngay
+          </button>
+        </div>
+      </div>
+
+      <!-- Thanh công cụ điều khiển nhanh -->
+      <div class="camera-controls-bar">
+        <div class="btn-group">
+          <button class="hud-btn active" id="btn-toggle-camera" title="Bật/Tắt Camera">
+            <span id="cam-icon">📹</span> Camera: Bật
+          </button>
+          <button class="hud-btn active" id="btn-toggle-mirror" title="Lật gương màn hình">
+            🪞 Gương: Bật
+          </button>
+          <button class="hud-btn active" id="btn-toggle-skeleton" title="Bật/Tắt khung xương tay">
+            🦴 Khung xương: Bật
+          </button>
+          <button class="hud-btn active" id="btn-toggle-pose" title="Bật/Tắt khung nhận diện người">
+            👤 Khung Người: Bật
+          </button>
+        </div>
+
+        <div class="btn-group">
+          <button class="hud-btn active" id="btn-toggle-voice" title="Đọc tiếng Việt khi đếm">
+            🔊 Giọng đọc: Bật
+          </button>
+          <button class="hud-btn" id="btn-snapshot" title="Chụp ảnh khung hình hiện tại">
+            📸 Chụp ảnh
+          </button>
+          <button class="hud-btn" id="btn-demo-mode" title="Mô phỏng đếm ngón tay khi không có Camera">
+            ✨ Demo Giả lập
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cột bên phải (Side Panel): Thống kê, Bảng số & Thử thách -->
+    <aside class="side-panel">
+      <!-- Bảng sáng số ngón tay 1 - 5 -->
+      <div class="hud-panel">
+        <h3 class="panel-title">
+          <span>🖐️</span> THƯỚC ĐO NGÓN TAY
+        </h3>
+        <div class="finger-cards-grid">
+          <div class="num-card" id="card-num-1">
+            <span class="num-card-val">1</span>
+            <span class="num-card-name">Ngón Trỏ</span>
+          </div>
+          <div class="num-card" id="card-num-2">
+            <span class="num-card-val">2</span>
+            <span class="num-card-name">Chữ V</span>
+          </div>
+          <div class="num-card" id="card-num-3">
+            <span class="num-card-val">3</span>
+            <span class="num-card-name">Ba Ngón</span>
+          </div>
+          <div class="num-card" id="card-num-4">
+            <span class="num-card-val">4</span>
+            <span class="num-card-name">Bốn Ngón</span>
+          </div>
+          <div class="num-card" id="card-num-5">
+            <span class="num-card-val">5</span>
+            <span class="num-card-name">Mở Bàn</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thống kê Telemetry thời gian thực -->
+      <div class="hud-panel">
+        <h3 class="panel-title">
+          <span>📊</span> THÔNG SỐ HOẠT ĐỘNG (TELEMETRY)
+        </h3>
+        <div class="telemetry-grid">
+          <div class="stat-box">
+            <div class="stat-label">TỐC ĐỘ XỬ LÝ (FPS)</div>
+            <div class="stat-value" id="stat-fps">0 FPS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">ĐỘ TRỄ AI (LATENCY)</div>
+            <div class="stat-value" id="stat-latency">0 ms</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">BÀN TAY PHÁT HIỆN</div>
+            <div class="stat-value" id="stat-hands">0 tay</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">NGƯỜI TRONG KHUNG</div>
+            <div class="stat-value" id="stat-persons">0 người</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thử thách Phản Xạ Ngón Tay (Interactive Game) -->
+      <div class="hud-panel">
+        <div class="challenge-box">
+          <div class="challenge-header">
+            <span class="challenge-badge">🎮 TRÒ CHƠI PHẢN XẠ</span>
+            <button class="hud-btn" id="btn-start-game" style="padding: 4px 10px; font-size: 0.8rem;">
+              Chơi ngay
+            </button>
+          </div>
+          <div class="challenge-target" id="challenge-target-text">
+            Bấm "Chơi ngay" để thử phản xạ ra dấu ngón tay!
+          </div>
+          <div class="challenge-score">
+            <span>Điểm: <b id="game-score">0</b></span>
+            <span>Thời gian: <b id="game-timer">--s</b></span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>Nexus Vision AI &copy; 2026.Athor:Viet Anh Nguyen .</p>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
